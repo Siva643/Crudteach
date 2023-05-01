@@ -6,6 +6,8 @@ use App\Models\crud;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\Password;   
 
 
 class CrudController extends Controller
@@ -17,6 +19,24 @@ class CrudController extends Controller
     }
     public function store(Request $request)
     {
+       $request->validate([
+        'firstname'=>'required|regex:/^[A-Z]+$/i',
+        'lastname'=>'required|regex:/^[A-Z]+$/i',
+        'image'=>'required|image|mimes:jpg,png',
+        'username'=>'required|regex:/^[A-Z]+$/i',
+        'address'=>'required',
+        'city'=>'required',
+        'state'=>'required',
+        'zip'=>'required',
+        'email'=>'required|regex:/^.+@.+$/i|email|unique:cruds,email',
+        'password'=>['required','string',
+        Password::min(8)->letters()->numbers()->mixedCase()->symbols()->uncompromised(3)
+    ],
+       ],[
+       // 'firstname'=>'filled must'
+       ]);
+
+
      $file=time() . '.' .request()->image->getClientOriginalExtension();
      request()->image->move(public_path('images'),$file);
 //all image save public folder
